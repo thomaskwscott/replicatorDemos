@@ -209,10 +209,7 @@ services:
                        cub kafka-ready -b srcKafka2:10092 1 60 --config /etc/kafka/kafka.properties && \
                        cub kafka-ready -b srcKafka3:10093 1 60 --config /etc/kafka/kafka.properties && \
                        kafka-topics --zookeeper srcZookeeper:2181 --topic testTopic --create --replication-factor 3 --partitions 12 && \
-                       echo ssl.truststore.location=/etc/kafka/secrets/kafka.srcKafkaClient.truststore.jks >> producer.properties && \
-                       echo ssl.truststore.password=confluent >> producer.properties && \
-                       echo security.protocol=ssl >> producer.properties && \
-                       kafka-console-producer --broker-list srcKafka1:10091 --topic testTopic --producer.config producer.properties < /etc/kafka/testData/testData.txt'"
+                       kafka-console-producer --broker-list srcKafka1:10091 --topic testTopic --producer.config /etc/kafka/secrets/srcKafkaClient_ssl.properties < /etc/kafka/testData/testData.txt'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
       # We override the image's `command` anyways, hence this container will not start a broker.

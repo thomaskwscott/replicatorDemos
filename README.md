@@ -33,7 +33,7 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
+  docker-compose -f docker-compose_unsecure.yml exec destKafka1 bash
   kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --from-beginning
   ```
 
@@ -46,9 +46,11 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
+  docker-compose -f docker-compose_source_ssl_encryption.yml exec destKafka1 bash
   kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification  
   
 * Destination Cluster with SSL encryption
 
@@ -59,15 +61,11 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
-  echo ssl.truststore.location=/etc/kafka/secrets/kafka.destKafkaClient.truststore.jks >> consumer.properties
-  echo ssl.truststore.password=confluent >> consumer.properties 
-  echo ssl.keystore.location=/etc/kafka/secrets/kafka.destKafkaClient.keystore.jks >> consumer.properties
-  echo ssl.keystore.password=confluent >> consumer.properties 
-  echo ssl.key.password=confluent >> consumer.properties 
-  echo security.protocol=ssl >> consumer.properties
-  kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --consumer.config consumer.properties --from-beginning
+  docker-compose -f docker-compose_dest_ssl_encryption.yml exec destKafka1 bash
+  kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --consumer.config /etc/kafka/secrets/destKafkaClient_ssl.properties --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification 
 
 * Source Cluster with SSL authentication
 
@@ -78,9 +76,11 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
+  docker-compose -f docker-compose_source_ssl_auth.yml exec destKafka1 bash
   kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification 
 
 * Destination Cluster with SSL authentication
 
@@ -91,15 +91,11 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
-  echo ssl.truststore.location=/etc/kafka/secrets/kafka.destKafkaClient.truststore.jks >> consumer.properties
-  echo ssl.truststore.password=confluent >> consumer.properties 
-  echo ssl.keystore.location=/etc/kafka/secrets/kafka.destKafkaClient.keystore.jks >> consumer.properties
-  echo ssl.keystore.password=confluent >> consumer.properties 
-  echo ssl.key.password=confluent >> consumer.properties 
-  echo security.protocol=ssl >> consumer.properties
-  kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --consumer.config consumer.properties --from-beginning
+  docker-compose -f docker-compose_dest_ssl_auth.yml exec destKafka1 bash
+  kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --consumer.config /etc/kafka/secrets/destKafkaClient_ssl.properties --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification 
 
 * Source Cluster with SASL Plain authentication
 
@@ -110,22 +106,23 @@ In all environments no actions are taken on the destination brokers. Because of 
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
+  docker-compose -f docker-compose_source_sasl_plain_auth.yml exec destKafka1 bash
   kafka-console-consumer --bootstrap-server localhost:11091 --topic testTopic --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification 
 
 * Destination Cluster with SASL Plain authentication
 
   This can be started with:
   ```
-  docker-compose -f docker-compose_source_sasl_plain_auth.yml up -d
+  docker-compose -f docker-compose_dest_sasl_plain_auth.yml up -d
   ```
   
   And verified as follows:
   ```
-  docker-compose exec destKafka1 bash
-  echo security.protocol=SASL_PLAINTEXT > consumer.properties
-  echo sasl.mechanism=PLAIN >> consumer.properties
-  echo sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"client\" password=\"client-secret\"\; >> consumer.properties
-  kafka-console-consumer --bootstrap-server localhost:11091 --consumer.config consumer.properties --topic testTopic --from-beginning
+  docker-compose -f docker-compose_dest_sasl_plain_auth.yml exec destKafka1 bash
+  kafka-console-consumer --bootstrap-server localhost:11091 --consumer.config /etc/kafka/secrets/destKafkaClient_sasl.properties --topic testTopic --from-beginning
   ```
+  
+  Note: both the srcKafkaClient and destKafkaClient containers must complete and exit 0 before verification 
